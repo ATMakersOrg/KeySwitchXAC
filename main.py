@@ -61,6 +61,7 @@ codeStartTime = monotonic()
 
 while(True):
     num = 0
+    sw = [0,0,0,0,0]
     switchCode = 0x00
     readTime = monotonic()
     for p in pins:
@@ -68,22 +69,26 @@ while(True):
         if(p.value == False):
             switchCode |= (1 << num)
     if (switchCode != 0):
-        print(switchCode)
-        if (switchCode in currentMode.actions):
-            a = currentMode.actions[switchCode]
-            if a[0] == Mode.BUTTON_PRESS:
-                (actionType, buttonNum) = a
-                if type(buttonNum) is int:
-                    print("Button=",buttonNum)
-                    gp.press_buttons(buttonNum)
-                else:
-                    for b in buttonNum:
-                        print("Button=",b)
-                        gp.press_buttons(b)
-            elif a[0] == Mode.DPAD_MOVE:
-                (actionType, x, y) = a
-                print("x=",x,",y=",y)
-                gp.move_joysticks(dpadMap(x),dpadMap(-y))
+        lastSwitchCode = switchCode
+        for i in range(num):
+            sw[num-i-1]=lastSwitchCode/pow(2,num-i)
+            lastSwitchCode= lastSwitchCode%pow(2,num-i)
+            if (lastSwitchCode in currentMode.actions):
+                a = currentMode.actions[lastSwitchCode]
+                if a[0] == Mode.BUTTON_PRESS:
+                    (actionType, buttonNum) = a
+                    if type(buttonNum) is int:
+                        print("Button=",buttonNum)
+                        gp.press_buttons(buttonNum)
+                    else:
+                        for b in buttonNum:
+                            print("Button=",b)
+                            gp.press_buttons(b)
+                elif a[0] == Mode.DPAD_MOVE:
+                    (actionType, x, y) = a
+                    print("x=",x,",y=",y)
+                    gp.move_joysticks(dpadMap(x),dpadMap(-y))
+            lastSwitchCode= lastSwitchCode%pow(2,num-i)
         if (switchCode != lastCode):
             print("NewCode")
             lastCode = switchCode
