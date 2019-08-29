@@ -69,12 +69,15 @@ while(True):
         if(p.value == False):
             switchCode |= (1 << num)
     if (switchCode != 0):
-        lastSwitchCode = switchCode
+        tempSwitchCode = switchCode
         for i in range(num):
-            sw[num-i-1]=lastSwitchCode/pow(2,num-i)
-            lastSwitchCode= lastSwitchCode%pow(2,num-i)
-            if (lastSwitchCode in currentMode.actions):
-                a = currentMode.actions[lastSwitchCode]
+            if (int(tempSwitchCode/pow(2,num-i))==1):
+                tempSwitchCode = tempSwitchCode%pow(2,num-i)
+                singleSwitchCode=pow(2,num-i)
+            else:
+                singleSwitchCode=0
+            if (singleSwitchCode in currentMode.actions):
+                a = currentMode.actions[singleSwitchCode]
                 if a[0] == Mode.BUTTON_PRESS:
                     (actionType, buttonNum) = a
                     if type(buttonNum) is int:
@@ -88,7 +91,6 @@ while(True):
                     (actionType, x, y) = a
                     print("x=",x,",y=",y)
                     gp.move_joysticks(dpadMap(x),dpadMap(-y))
-            lastSwitchCode= lastSwitchCode%pow(2,num-i)
         if (switchCode != lastCode):
             print("NewCode")
             lastCode = switchCode
@@ -104,7 +106,6 @@ while(True):
                     dot[0]=modeColor
                 codeStartTime = readTime
     else:
-        #print("Release")
         gp.release_all_buttons()
         gp.move_joysticks(127,127)
     lastCode = switchCode

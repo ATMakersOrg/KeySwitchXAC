@@ -6,7 +6,7 @@ from mode import Mode
 modeSwitches=(5,) #which switches do you hold down to change modes
 modeDelay=2.0 #And how many seconds does it wait when they're down
 
-repeatDelay=.1
+repeatDelay=.2
 
 #For a single switch user, you might choose
 #modeswitches=1
